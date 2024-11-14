@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiệu Ứng Trái Tim với Video Nền</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: none;
+        }
+
+        #backgroundVideo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .play-btn {
+            padding: 10px 20px;
+            background-color: #FF5CA4;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 18px;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 30px;
+            border-radius: 100px 100px 0 0;
+            background: pink;
+        }
+
+        .heart::before {
+            left: 20px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes beat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video nền -->
+    <video id="backgroundVideo" autoplay muted loop playsinline>
+        <source src="src/mp3/CÔ GÁI VÀNG - HuyR x Tùng Viu x Quang Đăng - OFFICIAL MUSIC VIDEO.mp4" type="video/mp4">
+        Trình duyệt của bạn không hỗ trợ video.
+    </video>
+
+    <!-- Canvas cho hiệu ứng trái tim -->
+    <canvas id="heartCanvas"></canvas>
+
+    <!-- Nút phát nhạc ở footer -->
+    <div class="footer">
+        <button id="playBtn" class="play-btn">Phát nhạc</button>
+    </div>
+
+    <!-- Thêm thẻ audio để phát nhạc -->
+    <audio id="backgroundMusic" src="src/mp3/CÔ GÁI VÀNG - HuyR x Tùng Viu x Quang Đăng - OFFICIAL MUSIC VIDEO.mp4"></audio>
+
+    <script>
+        // JavaScript cho nút phát nhạc
+        const playBtn = document.getElementById('playBtn');
+        const music = document.getElementById('backgroundMusic');
+        let isPlaying = false;
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                music.pause();
+                playBtn.textContent = 'Phát nhạc';
+            } else {
+                music.play();
+                playBtn.textContent = 'Dừng nhạc';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        music.addEventListener('ended', () => {
+            isPlaying = false;
+            playBtn.textContent = 'Phát nhạc';
+        });
+
+        // Hiệu ứng trái tim trên canvas
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const hearts = [];
+        const numHearts = 100;
+
+        function createHeart() {
+            const heart = {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 0.5 + 0.5,
+                dx: (Math.random() - 0.5) * 4,
+                dy: (Math.random() - 0.5) * 4,
+                color: `hsla(${Math.random() * 360}, 100%, 70%, 0.8)`
+            };
+            hearts.push(heart);
+        }
+
+        function drawHeart(heart) {
+            ctx.fillStyle = heart.color;
+            ctx.beginPath();
+            ctx.moveTo(heart.x, heart.y);
+            ctx.bezierCurveTo(heart.x + heart.size * 10, heart.y - heart.size * 10, heart.x + heart.size * 20, heart.y + heart.size * 10, heart.x, heart.y + heart.size * 20);
+            ctx.bezierCurveTo(heart.x - heart.size * 20, heart.y + heart.size * 10, heart.x - heart.size * 10, heart.y - heart.size * 10, heart.x, heart.y);
+            ctx.fill();
+        }
+
+        function updateHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach((heart) => {
+                heart.x += heart.dx;
+                heart.y += heart.dy;
+
+                if (heart.x < 0 || heart.x > canvas.width) heart.dx *= -1;
+                if (heart.y < 0 || heart.y > canvas.height) heart.dy *= -1;
+
+                drawHeart(heart);
+            });
+
+            requestAnimationFrame(updateHearts);
+        }
+
+        for (let i = 0; i < numHearts; i++) {
+            createHeart();
+        }
+
+        updateHearts();
+
+        // Xử lý khi thay đổi kích thước màn hình
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

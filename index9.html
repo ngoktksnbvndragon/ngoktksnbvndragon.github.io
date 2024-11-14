@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiệu Ứng Trái Tim</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 18px;
+        }
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 30px;
+            border-radius: 100px 100px 0 0;
+            background: pink;
+        }
+        .heart::before {
+            left: 20px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+        @keyframes beat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    const hearts = [];
+    const numHearts = 100;
+
+    // Hàm tạo trái tim
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        document.body.appendChild(heart);
+
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        const size = Math.random() * 0.5 + 0.5;
+        const dx = (Math.random() - 0.5) * 4;
+        const dy = (Math.random() - 0.5) * 4;
+
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        heart.style.transform = `scale(${size})`;
+        heart.style.animation = "beat 0.8s infinite alternate";
+
+        // Thêm sự kiện click vào trái tim
+        heart.addEventListener('click', explodeAllHearts);
+
+        hearts.push({ element: heart, x, y, dx, dy });
+    }
+
+    // Hàm tan biến tất cả trái tim
+    function explodeAllHearts() {
+        hearts.forEach((heart) => {
+            explodeHeart(heart.element);
+        });
+        formBigHeart();
+    }
+
+    // Hàm tan biến một trái tim
+    function explodeHeart(heart) {
+        heart.remove();
+    }
+
+    // Hàm xếp thành hình trái tim lớn
+    function formBigHeart() {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const scale = 15;
+
+        for (let i = 0; i < numHearts; i++) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            document.body.appendChild(heart);
+
+            const t = (Math.PI * 2 * i) / numHearts;
+            const x = centerX + scale * (16 * Math.sin(t) ** 3);
+            const y = centerY - scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            heart.style.transform = "scale(0.5)";
+            heart.style.animation = "none";
+        }
+    }
+
+    // Hàm cập nhật vị trí các trái tim
+    function updateHearts() {
+        hearts.forEach((heart) => {
+            heart.x += heart.dx;
+            heart.y += heart.dy;
+
+            if (heart.x <= 0 || heart.x >= window.innerWidth - 20) {
+                heart.dx *= -1;
+            }
+            if (heart.y <= 0 || heart.y >= window.innerHeight - 18) {
+                heart.dy *= -1;
+            }
+
+            heart.element.style.left = `${heart.x}px`;
+            heart.element.style.top = `${heart.y}px`;
+        });
+
+        requestAnimationFrame(updateHearts);
+    }
+
+    // Tạo 100 trái tim
+    for (let i = 0; i < numHearts; i++) {
+        createHeart();
+    }
+
+    // Bắt đầu cập nhật vị trí
+    updateHearts();
+</script>
+
+</body>
+</html>
