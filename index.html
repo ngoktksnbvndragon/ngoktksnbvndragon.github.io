@@ -143,7 +143,7 @@
         <source src="src/mp3/CÔ GÁI VÀNG - HuyR x Tùng Viu x Quang Đăng - OFFICIAL MUSIC VIDEO.mp4" type="video/mp4">
         Trình duyệt của bạn không hỗ trợ video.
     </video> -->
-    <a href="index5.html?autoplay=true" class="nav-arrow"></a>
+    <a href="index5.html" class="nav-arrow" id="nextPage"></a>
     <canvas id="pinkboard"></canvas>
     <!-- Canvas cho hiệu ứng trái tim -->
     <canvas id="heartCanvas"></canvas>
@@ -160,11 +160,23 @@
         // Xử lý phát nhạc
         const music = document.getElementById('backgroundMusic');
         const playBtn = document.getElementById('playBtn');
+        const nextPage = document.getElementById('nextPage');
         
         // Thêm sự kiện click cho nút phát
         playBtn.addEventListener('click', () => {
             music.play();
             playBtn.style.display = 'none'; // Ẩn nút sau khi phát
+        });
+
+        // Thêm sự kiện click cho nút chuyển trang
+        nextPage.addEventListener('click', (e) => {
+            e.preventDefault(); // Ngăn chuyển trang ngay lập tức
+            
+            // Lưu trạng thái phát nhạc vào localStorage
+            localStorage.setItem('shouldPlayMusic', 'true');
+            
+            // Chuyển trang
+            window.location.href = 'index5.html';
         });
 
         // Hiệu ứng trái tim trên canvas

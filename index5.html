@@ -50,6 +50,16 @@
                 transition: transform 0.3s ease;
             }
 
+            .music-note.blink {
+                animation: blink 1s infinite;
+            }
+
+            @keyframes blink {
+                0% { opacity: 1; }
+                50% { opacity: 0.3; }
+                100% { opacity: 1; }
+            }
+
             .back-arrow {
                 position: fixed;
                 top: 20px;
@@ -80,7 +90,7 @@
     <a href="index.html" class="back-arrow">←</a>
     
     <!-- Nút phát nhạc -->
-    <button id="playBtn" class="music-note">🔊</button>
+    <button id="playBtn" class="music-note">▶️🔇</button>
     
     <!-- Thêm thẻ audio để phát nhạc -->
     <audio id="backgroundMusic" loop>
@@ -93,23 +103,43 @@
         const playBtn = document.getElementById('playBtn');
         let isPlaying = false;
         
-        // Kiểm tra tham số autoplay trong URL
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('autoplay') === 'true') {
-            // Tự động click nút phát nhạc sau 1 giây
-            setTimeout(() => {
-                playBtn.click();
-            }, 1000);
+        // Kiểm tra localStorage để xem có nên phát nhạc không
+        if (localStorage.getItem('shouldPlayMusic') === 'true') {
+            // Xóa trạng thái đã lưu
+            localStorage.removeItem('shouldPlayMusic');
+            
+            // Thử phát nhạc
+            music.play()
+                .then(() => {
+                    playBtn.textContent = '⏸️🔊';
+                    isPlaying = true;
+                    playBtn.classList.remove('blink');
+                })
+                .catch(error => {
+                    console.log('Lỗi khi phát nhạc:', error);
+                    playBtn.classList.add('blink');
+                });
+        } else {
+            // Nếu không có trạng thái phát nhạc, thêm hiệu ứng nhấp nháy
+            playBtn.classList.add('blink');
         }
         
         // Thêm sự kiện click cho nút phát
         playBtn.addEventListener('click', () => {
             if (isPlaying) {
                 music.pause();
-                playBtn.textContent = '🔇';
+                playBtn.textContent = '▶️🔇';
+                playBtn.classList.add('blink');
             } else {
-                music.play();
-                playBtn.textContent = '🔊';
+                music.play()
+                    .then(() => {
+                        playBtn.textContent = '⏸️🔊';
+                        playBtn.classList.remove('blink');
+                    })
+                    .catch(error => {
+                        console.log('Lỗi khi phát nhạc:', error);
+                        alert('Vui lòng click vào nút loa để phát nhạc!');
+                    });
             }
             isPlaying = !isPlaying;
         });
