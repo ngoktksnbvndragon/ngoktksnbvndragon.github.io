@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ngọ nguội</title>
+    <link rel="icon" href="data:,">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         html, body {
@@ -109,6 +110,31 @@
                 transform: scale(1.2);
             }
         }
+
+        .nav-arrow {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover {
+            transform: scale(1.2);
+        }
+
+        .nav-arrow::after {
+            content: "→";
+            color: #FF69B4;
+            font-size: 40px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -117,40 +143,28 @@
         <source src="src/mp3/CÔ GÁI VÀNG - HuyR x Tùng Viu x Quang Đăng - OFFICIAL MUSIC VIDEO.mp4" type="video/mp4">
         Trình duyệt của bạn không hỗ trợ video.
     </video> -->
+    <a href="index5.html?autoplay=true" class="nav-arrow"></a>
     <canvas id="pinkboard"></canvas>
     <!-- Canvas cho hiệu ứng trái tim -->
     <canvas id="heartCanvas"></canvas>
 
     <div class="love-text">Love Hoàng Phương Thanh</div>
 
-    <!-- Nút phát nhạc ở footer -->
-    <div class="footer">
-        <button id="playBtn" class="play-btn">Phát nhạc</button>
-    </div>
+    <!-- Nút phát nhạc -->
+    <button id="playBtn" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; font-size: 16px; cursor: pointer; background: #FF1493; border: none; color: white; border-radius: 5px;">▶</button>
 
     <!-- Thêm thẻ audio để phát nhạc -->
-    <audio id="backgroundMusic" src="src/mp3/CÔ GÁI VÀNG - HuyR x Tùng Viu x Quang Đăng - OFFICIAL MUSIC VIDEO.mp3"></audio>
+    <audio id="backgroundMusic" src="src/mp3/CÔ GÁI VÀNG - HuyR x Tùng Viu x Quang Đăng - OFFICIAL MUSIC VIDEO.mp3" loop playsinline></audio>
 
     <script>
-        // JavaScript cho nút phát nhạc
-        const playBtn = document.getElementById('playBtn');
+        // Xử lý phát nhạc
         const music = document.getElementById('backgroundMusic');
-        let isPlaying = false;
-
+        const playBtn = document.getElementById('playBtn');
+        
+        // Thêm sự kiện click cho nút phát
         playBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                music.pause();
-                playBtn.textContent = 'Phát nhạc';
-            } else {
-                music.play();
-                playBtn.textContent = 'Dừng nhạc';
-            }
-            isPlaying = !isPlaying;
-        });
-
-        music.addEventListener('ended', () => {
-            isPlaying = false;
-            playBtn.textContent = 'Phát nhạc';
+            music.play();
+            playBtn.style.display = 'none'; // Ẩn nút sau khi phát
         });
 
         // Hiệu ứng trái tim trên canvas
